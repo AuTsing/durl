@@ -12,7 +12,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.autsing.durl.item.Request
+import com.autsing.durl.model.Request
 
 @Composable
 fun RequestContent(
