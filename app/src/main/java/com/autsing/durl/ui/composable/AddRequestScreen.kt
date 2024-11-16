@@ -27,8 +27,8 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
@@ -47,7 +47,8 @@ import kotlinx.coroutines.launch
 fun AddRequestScreen() {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
-    var urlValue by remember { mutableStateOf("") }
+    var nameValue by rememberSaveable { mutableStateOf("") }
+    var urlValue by rememberSaveable { mutableStateOf("") }
 
     DurlTheme {
         Scaffold(
@@ -75,7 +76,11 @@ fun AddRequestScreen() {
                     Spacer(modifier = Modifier.width(16.dp))
                     Button(onClick = {
                         coroutineScope.launch {
-                            handleClickOk(context, urlValue)
+                            handleClickOk(
+                                context = context,
+                                nameValue = nameValue,
+                                urlValue = urlValue,
+                            )
                         }
                     }) {
                         Icon(
@@ -92,7 +97,9 @@ fun AddRequestScreen() {
         ) { innerPadding ->
             Surface(modifier = Modifier.padding(innerPadding)) {
                 AddRequestContent(
+                    nameValue = nameValue,
                     urlValue = urlValue,
+                    onNameChange = { nameValue = it },
                     onUrlChange = { urlValue = it },
                 )
             }
@@ -102,7 +109,9 @@ fun AddRequestScreen() {
 
 @Composable
 private fun AddRequestContent(
+    nameValue: String = "",
     urlValue: String = "",
+    onNameChange: (String) -> Unit = {},
     onUrlChange: (String) -> Unit = {},
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -118,6 +127,14 @@ private fun AddRequestContent(
     ) {
         item {
             TextField(
+                value = nameValue,
+                onValueChange = onNameChange,
+                label = { Text("名称") },
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+        item {
+            TextField(
                 value = urlValue,
                 onValueChange = onUrlChange,
                 label = { Text("URL") },
@@ -129,9 +146,11 @@ private fun AddRequestContent(
 
 private suspend fun handleClickOk(
     context: Context,
+    nameValue: String,
     urlValue: String,
 ) {
     Request(
+        name = nameValue,
         url = urlValue,
     ).let { RequestsRepository.instance.addRequest(it) }
     (context as AddRequestActivity).finish()
