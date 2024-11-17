@@ -17,5 +17,7 @@ fun MainGraph(
     MainScreen(
         requests = requests,
         onClickAddRequest = { requestViewModel.handleClickAddRequest(context) },
+        onClickSendRequest = requestViewModel::handleClickSendRequest,
+        onClickRemoveRequest = requestViewModel::handleClickRemoveRequest,
     )
 }

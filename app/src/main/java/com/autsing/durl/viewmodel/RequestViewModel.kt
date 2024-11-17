@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.autsing.durl.activity.AddRequestActivity
+import com.autsing.durl.model.Request
 import com.autsing.durl.repository.RequestsRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -29,5 +30,13 @@ class RequestViewModel : ViewModel() {
 
     fun handleClickAddRequest(context: Context) {
         AddRequestActivity.startActivity(context)
+    }
+
+    fun handleClickSendRequest(request: Request) {
+
+    }
+
+    fun handleClickRemoveRequest(request: Request) = viewModelScope.launch {
+        requestsRepository.removeRequest(request)
     }
 }
