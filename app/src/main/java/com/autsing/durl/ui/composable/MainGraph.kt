@@ -23,10 +23,12 @@ import com.autsing.durl.navigation.MainDestination
 import com.autsing.durl.navigation.Navigation
 import com.autsing.durl.ui.theme.DurlTheme
 import com.autsing.durl.viewmodel.RequestViewModel
+import com.autsing.durl.viewmodel.ResponseViewModel
 
 @Composable
 fun MainGraph(
     requestViewModel: RequestViewModel = viewModel(),
+    responseViewModel: ResponseViewModel = viewModel(),
 ) {
     val navController = rememberNavController()
     val navigation = remember(navController) {
@@ -40,6 +42,7 @@ fun MainGraph(
     val currentRoute = navBackStackEntry?.destination?.route ?: navigation.getCurrentRoute()
     val context = LocalContext.current
     val requests by requestViewModel.requests.collectAsState()
+    val responses by responseViewModel.responses.collectAsState()
 
     DurlTheme {
         Scaffold(
@@ -74,7 +77,12 @@ fun MainGraph(
                             onClickRemoveRequest = requestViewModel::handleClickRemoveRequest,
                         )
                     }
-                    composable(MainDestination.Response.route) { Text("Response") }
+                    composable(MainDestination.Response.route) {
+                        ResponseScreen(
+                            responses = responses,
+                            onClickClearResponses = responseViewModel::handleClearResponses,
+                        )
+                    }
                 }
             }
         }
