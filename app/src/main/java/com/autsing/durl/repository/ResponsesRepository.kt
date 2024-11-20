@@ -61,10 +61,16 @@ class ResponsesRepository(
         response: Response,
         newResponse: Response,
     ) = withContext(Dispatchers.IO) {
-        responses.value
-            .toMutableList()
-            .apply { this[indexOf(response)] = newResponse }
-            .let { responses.value = it }
+        synchronized(responses.value) {
+            responses.value
+                .toMutableList()
+                .apply {
+                    val index = indexOf(response)
+                    if (index == -1) return@apply
+                    this[index] = newResponse
+                }
+                .let { responses.value = it }
+        }
         dataStore.edit { it[prefKeyResponses] = Json.encodeToString(responses.value) }
         return@withContext
     }
