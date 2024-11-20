@@ -1,6 +1,8 @@
 package com.autsing.durl.ui.composable
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -43,24 +45,47 @@ fun MainGraph(
     val context = LocalContext.current
     val requests by requestViewModel.requests.collectAsState()
     val responses by responseViewModel.responses.collectAsState()
+    val unreadCount by responseViewModel.unreadCount.collectAsState()
 
     DurlTheme {
         Scaffold(
             bottomBar = {
                 NavigationBar {
-                    MainDestination.list.forEach {
-                        NavigationBarItem(
-                            icon = {
+                    NavigationBarItem(
+                        icon = {
+                            Icon(
+                                painter = painterResource(MainDestination.Request.iconId),
+                                contentDescription = "Request navigation",
+                            )
+                        },
+                        label = { Text(MainDestination.Request.label) },
+                        onClick = { navigation.navigateTo(MainDestination.Request.route) },
+                        selected = currentRoute == MainDestination.Request.route,
+                    )
+                    NavigationBarItem(
+                        icon = {
+                            BadgedBox(
+                                badge = {
+                                    if (unreadCount > 0) {
+                                        Badge {
+                                            Text(unreadCount.toString())
+                                        }
+                                    }
+                                }
+                            ) {
                                 Icon(
-                                    painter = painterResource(it.iconId),
-                                    contentDescription = it.iconId.toString(),
+                                    painter = painterResource(MainDestination.Response.iconId),
+                                    contentDescription = "Response navigation",
                                 )
-                            },
-                            label = { Text(it.label) },
-                            onClick = { navigation.navigateTo(it.route) },
-                            selected = currentRoute == it.route,
-                        )
-                    }
+                            }
+                        },
+                        label = { Text(MainDestination.Response.label) },
+                        onClick = {
+                            navigation.navigateTo(MainDestination.Response.route)
+                            responseViewModel.handleResetUnreadCount()
+                        },
+                        selected = currentRoute == MainDestination.Response.route,
+                    )
                 }
             },
         ) { innerPadding ->

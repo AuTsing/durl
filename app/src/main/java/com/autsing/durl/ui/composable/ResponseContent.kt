@@ -3,10 +3,12 @@ package com.autsing.durl.ui.composable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.autsing.durl.model.Response
@@ -15,7 +17,17 @@ import com.autsing.durl.model.Response
 fun ResponseContent(
     responses: List<Response> = emptyList(),
 ) {
-    LazyColumn {
+    val lazyListState = rememberLazyListState()
+
+    LaunchedEffect(responses) {
+        if (responses.isNotEmpty()) {
+            lazyListState.animateScrollToItem(responses.size - 1)
+        }
+    }
+
+    LazyColumn(
+        state = lazyListState,
+    ) {
         items(responses) {
             ListItem(
                 overlineContent = {
